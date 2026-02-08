@@ -106,12 +106,15 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
-  padding: 10px 14px;
+  height: 40px;
+  padding: 0 14px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 .base-select:hover .select-trigger {
@@ -179,6 +182,7 @@ onUnmounted(() => {
   padding: 10px 14px;
   cursor: pointer;
   transition: all 0.15s ease;
+  font-size: 14px;
 }
 
 .select-option:hover {

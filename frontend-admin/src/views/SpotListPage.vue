@@ -301,8 +301,9 @@ function resetFilters() {
 
 .search-input {
   width: 260px;
-  padding: 10px 36px 10px 40px;
-  font-size: var(--font-size-sm);
+  height: 40px;
+  padding: 0 36px 0 40px;
+  font-size: 14px;
   color: var(--text-primary);
   background: white;
   border: none;
