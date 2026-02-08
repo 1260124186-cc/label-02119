@@ -4,10 +4,11 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 复制依赖文件
-COPY package*.json ./
+COPY package.json ./
+COPY package-lock.json* ./
 
 # 安装依赖
-RUN npm ci --registry=https://registry.npmmirror.com
+RUN npm install --registry=https://registry.npmmirror.com
 
 # 复制源代码
 COPY . .
