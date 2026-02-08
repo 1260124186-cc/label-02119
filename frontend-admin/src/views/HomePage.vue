@@ -256,6 +256,7 @@ function scrollToHot() {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
+  margin-top: 24px;
 }
 
 /* Hero */
