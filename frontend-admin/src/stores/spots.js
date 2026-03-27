@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export const useSpotsStore = defineStore('spots', () => {
   const spots = ref([
@@ -296,6 +296,40 @@ export const useSpotsStore = defineStore('spots', () => {
     searchKeyword.value = keyword
   }
 
+  const favoriteSpotIds = ref([])
+
+  function loadFavorites() {
+    const saved = localStorage.getItem('favoriteSpotIds')
+    if (saved) {
+      favoriteSpotIds.value = JSON.parse(saved)
+    }
+  }
+
+  function saveFavorites() {
+    localStorage.setItem('favoriteSpotIds', JSON.stringify(favoriteSpotIds.value))
+  }
+
+  function toggleFavorite(spotId) {
+    const index = favoriteSpotIds.value.indexOf(spotId)
+    if (index > -1) {
+      favoriteSpotIds.value.splice(index, 1)
+    } else {
+      favoriteSpotIds.value.push(spotId)
+    }
+  }
+
+  function isFavorite(spotId) {
+    return favoriteSpotIds.value.includes(spotId)
+  }
+
+  const favoriteSpots = computed(() => {
+    return spots.value.filter(spot => favoriteSpotIds.value.includes(spot.id))
+  })
+
+  loadFavorites()
+
+  watch(favoriteSpotIds, saveFavorites, { deep: true })
+
   return {
     spots,
     categories,
@@ -303,8 +337,12 @@ export const useSpotsStore = defineStore('spots', () => {
     searchKeyword,
     filteredSpots,
     hotSpots,
+    favoriteSpotIds,
+    favoriteSpots,
     getSpotById,
     setCategory,
-    setSearchKeyword
+    setSearchKeyword,
+    toggleFavorite,
+    isFavorite
   }
 })
