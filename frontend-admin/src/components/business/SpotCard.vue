@@ -3,6 +3,9 @@
     <template #image>
       <img v-lazy="imageUrl" :alt="spot.name" class="spot-image">
       <span class="spot-category">{{ spot.categoryName }}</span>
+      <button @click.stop="toggleFavorite" class="favorite-button">
+        <span :class="['star-icon', { 'is-favorite': isFavorite }]">⭐</span>
+      </button>
     </template>
 
     <div class="spot-info">
@@ -22,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getPlaceholderImage } from '@/utils/helpers'
 import BaseCard from '@/components/common/BaseCard.vue'
@@ -36,12 +39,46 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const isFavorite = ref(false)
 
 const imageUrl = computed(() => getPlaceholderImage(props.spot.image))
+
+// 从localStorage读取收藏状态
+function loadFavoriteStatus() {
+  try {
+    const favorites = JSON.parse(localStorage.getItem('spotFavorites') || '[]')
+    isFavorite.value = favorites.includes(props.spot.id)
+  } catch (e) {
+    console.error('Error loading favorites from localStorage:', e)
+  }
+}
+
+// 切换收藏状态
+function toggleFavorite() {
+  try {
+    let favorites = JSON.parse(localStorage.getItem('spotFavorites') || '[]')
+
+    if (isFavorite.value) {
+      // 移除收藏
+      favorites = favorites.filter(id => id !== props.spot.id)
+    } else {
+      // 添加收藏
+      favorites.push(props.spot.id)
+    }
+
+    localStorage.setItem('spotFavorites', JSON.stringify(favorites))
+    isFavorite.value = !isFavorite.value
+  } catch (e) {
+    console.error('Error saving favorite to localStorage:', e)
+  }
+}
 
 function goToDetail() {
   router.push(`/spot/${props.spot.id}`)
 }
+
+// 组件挂载时加载收藏状态
+onMounted(loadFavoriteStatus)
 </script>
 
 <style scoped>
@@ -61,6 +98,35 @@ function goToDetail() {
   color: white;
   background: rgba(0, 0, 0, 0.6);
   border-radius: var(--border-radius-sm);
+}
+
+.favorite-button {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.favorite-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.star-icon {
+  font-size: var(--font-size-lg);
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease;
+}
+
+.star-icon.is-favorite {
+  color: #ffc107;
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
 }
 
 .spot-info {
